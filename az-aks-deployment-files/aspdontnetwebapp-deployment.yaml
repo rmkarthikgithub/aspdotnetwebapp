@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: aspdotnetwebpp-deployment
+  namespace: default
+
+spec:
+  selector:
+    matchLabels:
+      app: aspdotnetwebpp
+
+  replicas: 2
+
+  template:
+    
+    metadata:
+      name: aspdotnetwebpp
+      labels:
+        app: aspdotnetwebpp
+    
+    spec:
+      containers:
+        - name: aspdotnetwebpp-container
+          image: 'calphaacr.azurecr.io/aspdotnetwebapp:latest'  # ACR

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mssqledge-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: azsqledge
+  template:
+    metadata:
+      labels:
+        app: azsqledge
+    spec:
+      volumes:
+        - name: azsqledge-volume
+          persistentVolumeClaim:
+            claimName: azsqledge-persistent-volume-claim
+      containers:
+        - name: azuresqledge-container
+          image: 'mcr.microsoft.com/azure-sql-edge:latest'
+          ports:
+            - containerPort: 1433
+          volumeMounts:
+            - name: azsqledge-volume
+              mountPath: /var/opt/mssql
+          env:
+            - name: MSSQL_PID
+              value: Developer
+            - name: ACCEPT_EULA
+              value: 'Y'
+            - name: SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mssql
+                  key: SA_PASSWORD
+            - name: MSSQL_AGENT_ENABLED
+              value: 'TRUE'
+            - name: MSSQL_COLLATION
+              value: SQL_Latin1_General_CP1_CI_AS
+            - name: MSSQL_LCID
+              value: '1033'
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        fsGroup: 10001

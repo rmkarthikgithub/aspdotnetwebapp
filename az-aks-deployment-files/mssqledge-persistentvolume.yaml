@@ -1,0 +1,26 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+
+metadata:
+  name: azsqledge-volume-by-storage-class
+
+provisioner: kubernetes.io/azure-disk
+
+parameters:
+  storageaccounttype: Standard_LRS
+  kind: managed
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+
+metadata:
+  name: azsqledge-persistent-volume-claim
+  annotations:
+    volume.beta.kubernetes.io/storage-class: azsqledge-volume-by-storage-class
+
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 8Gi
